@@ -1,6 +1,7 @@
 var path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 
 module.exports = env => {
     console.log('NODE_ENV: ', env.NODE_ENV);
@@ -30,7 +31,7 @@ module.exports = env => {
                     ]
                 },
                 {
-                    test: /\.s[ac]ss$/i,
+                    test: /\.css$/i,
                     use: [
                         env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
                         // Creates `style` nodes from JS strings
@@ -39,6 +40,24 @@ module.exports = env => {
                         'css-loader',
                         // Compiles Sass to CSS
                         'sass-loader',
+                    ],
+                },
+                {
+                    test: /\.s(c|a)ss$/,
+                    use: [
+                        env.NODE_ENV !== 'production' ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
+                        'css-loader',
+                        {
+                            loader: 'sass-loader',
+                            // Requires sass-loader@^8.0.0
+                            options: {
+                                implementation: require('sass'),
+                                sassOptions: {
+                                    fiber: require('fibers'),
+                                    //indentedSyntax: true // optional
+                                },
+                            },
+                        },
                     ],
                 },
             ]
@@ -50,7 +69,8 @@ module.exports = env => {
                 filename: '[name].css',
                 chunkFilename: '[id].css',
             }),
-            new VueLoaderPlugin()
+            new VueLoaderPlugin(),
+            new VuetifyLoaderPlugin()
         ]
     }
 }
